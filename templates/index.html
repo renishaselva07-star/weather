@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101b2d">
+  <title>WeatherWise AI — Your Weather Learning Companion</title>
+  <style>
+    :root {
+      --ink: #162238; --muted: #718096; --paper: #f4f7fb; --white: #fff;
+      --blue: #326cf5; --cyan: #66d9e8; --line: #e5ebf4;
+      --shadow: 0 22px 70px rgba(20, 42, 79, .12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 12% 8%, #dcecff 0, transparent 30%),
+                  radial-gradient(circle at 92% 90%, #d7f6f4 0, transparent 28%), var(--paper);
+      display: grid; place-items: center; padding: 28px;
+    }
+    .shell { width: min(1120px, 100%); min-height: min(780px, calc(100vh - 56px)); display: grid; grid-template-columns: 310px 1fr; border: 1px solid rgba(255,255,255,.8); border-radius: 28px; overflow: hidden; background: var(--white); box-shadow: var(--shadow); }
+    aside { padding: 30px 24px; color: #f4f8ff; background: linear-gradient(155deg, #14243e, #203e65 68%, #246b83); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    aside::before, aside::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; width: 250px; height: 250px; right: -145px; top: 150px; }
+    aside::after { width: 330px; height: 330px; right: -185px; top: 110px; }
+    .brand { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; color: #16304b; background: linear-gradient(135deg, #fff3bd, #70e2e8); font-size: 22px; }
+    .brand-name { font-weight: 750; letter-spacing: -.4px; font-size: 17px; }
+    .brand-sub { font-size: 11px; color: #b7c9df; margin-top: 3px; letter-spacing: 1.5px; text-transform: uppercase; }
+    .hero { margin-top: 64px; position: relative; z-index: 1; }
+    .eyebrow { color: #8ce5eb; text-transform: uppercase; letter-spacing: 2px; font-size: 10px; font-weight: 800; }
+    h1 { font-size: 35px; line-height: 1.08; letter-spacing: -1.4px; margin: 14px 0; }
+    .hero p { color: #c0d0e3; font-size: 13px; line-height: 1.7; }
+    .weather-art { height: 150px; display: flex; align-items: center; justify-content: center; margin: 24px 0 28px; position: relative; z-index: 1; }
+    .sun { width: 86px; height: 86px; border-radius: 50%; background: linear-gradient(135deg, #fff2ae, #ffbf67); box-shadow: 0 0 0 14px rgba(255,224,145,.08), 0 0 60px rgba(255,210,120,.3); position: absolute; top: 10px; right: 48px; }
+    .cloud { position: absolute; left: 38px; top: 63px; width: 170px; height: 57px; border-radius: 40px; background: linear-gradient(180deg, #f9fdff, #cfe8f7); box-shadow: 0 13px 25px rgba(5,20,45,.18); }
+    .cloud::before, .cloud::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
+    .cloud::before { width: 76px; height: 76px; left: 25px; top: -34px; }
+    .cloud::after { width: 58px; height: 58px; left: 80px; top: -21px; }
+    .side-note { margin-top: auto; padding: 15px; border: 1px solid rgba(255,255,255,.16); border-radius: 16px; background: rgba(255,255,255,.06); position: relative; z-index: 1; }
+    .side-note strong { display: block; font-size: 12px; margin-bottom: 6px; }
+    .side-note span { color: #b9cde0; font-size: 11px; line-height: 1.6; }
+    main { min-width: 0; display: flex; flex-direction: column; }
+    .topbar { height: 82px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; }
+    .top-title { font-weight: 750; font-size: 15px; }
+    .top-sub { color: var(--muted); font-size: 11px; margin-top: 5px; }
+    .status { display: flex; align-items: center; gap: 7px; padding: 8px 11px; border-radius: 30px; background: #effaf5; color: #22865d; font-size: 11px; font-weight: 700; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #36c98a; box-shadow: 0 0 0 4px #d9f6e8; }
+    .chat-area { flex: 1; min-height: 420px; display: flex; flex-direction: column; padding: 26px 30px 12px; overflow: hidden; }
+    .welcome { margin: 8px 0 22px; }
+    .welcome h2 { margin: 0 0 8px; font-size: 23px; letter-spacing: -.7px; }
+    .welcome p { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.6; }
+    .suggestions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .suggestion { text-align: left; border: 1px solid var(--line); background: #fbfcff; border-radius: 14px; padding: 13px 14px; cursor: pointer; transition: .2s; color: var(--ink); }
+    .suggestion:hover { border-color: #a9c2ff; background: #f4f7ff; transform: translateY(-1px); }
+    .suggestion b { display: block; font-size: 12px; margin-bottom: 5px; }
+    .suggestion span { display: block; font-size: 11px; color: var(--muted); line-height: 1.45; }
+    #messages { overflow-y: auto; flex: 1; padding: 4px 3px 16px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+    .message { max-width: 86%; display: flex; flex-direction: column; gap: 5px; }
+    .message.user { align-self: flex-end; align-items: flex-end; }
+    .message.bot { align-self: flex-start; }
+    .speaker { font-size: 10px; color: #8b97aa; font-weight: 750; letter-spacing: .4px; }
+    .bubble { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.65; padding: 12px 15px; border-radius: 16px; }
+    .user .bubble { color: white; background: linear-gradient(135deg, #3977fa, #4d61e9); border-bottom-right-radius: 5px; }
+    .bot .bubble { color: #34425a; background: #f1f5fa; border: 1px solid #e9eef5; border-bottom-left-radius: 5px; }
+    .composer-wrap { padding: 14px 30px 22px; }
+    .composer { display: flex; align-items: flex-end; gap: 10px; border: 1px solid #dfe6f1; background: #fbfcff; border-radius: 18px; padding: 9px; box-shadow: 0 5px 18px rgba(32,55,90,.04); }
+    textarea { flex: 1; border: 0; outline: 0; resize: none; background: transparent; color: var(--ink); font: inherit; font-size: 13px; line-height: 1.5; padding: 9px 8px; max-height: 130px; min-height: 38px; }
+    textarea::placeholder { color: #9aa6b8; }
+    #send { border: 0; border-radius: 12px; width: 42px; height: 42px; color: white; background: var(--blue); cursor: pointer; font-size: 18px; display: grid; place-items: center; transition: .2s; }
+    #send:hover { background: #2057df; } #send:disabled { opacity: .55; cursor: wait; }
+    .footnote { text-align: center; color: #9aa5b5; font-size: 10px; margin: 10px 0 0; }
+    .typing { display: inline-flex; gap: 4px; padding: 5px 0; }
+    .typing i { width: 5px; height: 5px; background: #8a9bb4; border-radius: 50%; animation: pulse 1s infinite alternate; }
+    .typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
+    @keyframes pulse { to { opacity: .25; transform: translateY(-3px); } }
+    @media (max-width: 760px) {
+      body { padding: 0; display: block; background: var(--paper); }
+      .shell { width: 100%; min-height: 100vh; border-radius: 0; grid-template-columns: 1fr; }
+      aside { padding: 19px 22px; min-height: auto; }
+      .hero { margin-top: 25px; } h1 { font-size: 28px; max-width: 340px; }
+      .hero p { max-width: 440px; } .weather-art { display: none; } .side-note { display: none; }
+      .topbar { height: 72px; padding: 0 20px; }
+      .chat-area { padding: 22px 20px 10px; min-height: 430px; }
+      .composer-wrap { padding: 12px 20px 18px; }
+    }
+    @media (max-width: 420px) { .suggestions { grid-template-columns: 1fr; } .message { max-width: 95%; } .status { font-size: 10px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">
+        <div class="brand-mark">☼</div>
+        <div><div class="brand-name">WeatherWise AI</div><div class="brand-sub">Learn the atmosphere</div></div>
+      </div>
+      <section class="hero">
+        <div class="eyebrow">Curiosity forecast</div>
+        <h1>Understand the sky.<br>Decode the weather.</h1>
+        <p>A learning companion for weather science, atmospheric patterns, clouds, storms, and climate concepts.</p>
+      </section>
+      <div class="weather-art" aria-hidden="true"><div class="sun"></div><div class="cloud"></div></div>
+      <div class="side-note"><strong>☁ A note from WeatherWise</strong><span>We focus on learning how weather works. For live forecasts or emergency instructions, check an official weather service.</span></div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div><div class="top-title">Weather learning studio</div><div class="top-sub">Ask a question. Explore a concept.</div></div>
+        <div class="status"><span class="dot"></span> AI ready</div>
+      </header>
+      <section class="chat-area">
+        <div class="welcome" id="welcome">
+          <h2>What are we exploring today?</h2>
+          <p>Start with a question or choose a topic below.</p>
+        </div>
+        <div class="suggestions" id="suggestions">
+          <button class="suggestion" data-prompt="How do clouds form?"><b>☁ Cloud formation</b><span>From water vapor to droplets</span></button>
+          <button class="suggestion" data-prompt="What causes thunderstorms?"><b>⚡ Thunderstorms</b><span>Learn about instability and lightning</span></button>
+          <button class="suggestion" data-prompt="What is atmospheric pressure?"><b>◉ Air pressure</b><span>Understand pressure and wind</span></button>
+          <button class="suggestion" data-prompt="Explain the water cycle."><b>↻ The water cycle</b><span>Follow water through the atmosphere</span></button>
+        </div>
+        <div id="messages" aria-live="polite"></div>
+      </section>
+      <div class="composer-wrap">
+        <form class="composer" id="chat-form">
+          <textarea id="message-input" rows="1" maxlength="6000" placeholder="Ask a weather or atmospheric science question…" aria-label="Your question"></textarea>
+          <button id="send" type="submit" aria-label="Send message">↑</button>
+        </form>
+        <p class="footnote">WeatherWise AI is for learning; answers may need verification.</p>
+      </div>
+    </main>
+  </div>
+  <script>
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("message-input");
+    const send = document.getElementById("send");
+    const messages = document.getElementById("messages");
+    const suggestions = document.getElementById("suggestions");
+    const welcome = document.getElementById("welcome");
+
+    function addMessage(text, role) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${role}`;
+      const label = document.createElement("div");
+      label.className = "speaker";
+      label.textContent = role === "user" ? "YOU" : "WEATHERWISE AI";
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+      wrapper.append(label, bubble);
+      messages.appendChild(wrapper);
+      messages.scrollTop = messages.scrollHeight;
+      return wrapper;
+    }
+
+    async function sendMessage(text) {
+      const message = text.trim();
+      if (!message || send.disabled) return;
+      welcome.hidden = true;
+      suggestions.hidden = true;
+      addMessage(message, "user");
+      input.value = "";
+      input.style.height = "auto";
+      send.disabled = true;
+      const loading = addMessage("", "bot");
+      loading.querySelector(".bubble").innerHTML = '<span class="typing" aria-label="Thinking"><i></i><i></i><i></i></span>';
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        loading.querySelector(".bubble").textContent = response.ok ? data.answer : (data.error || "Something went wrong.");
+      } catch (error) {
+        loading.querySelector(".bubble").textContent = "Connection problem. Please try again.";
+      } finally {
+        send.disabled = false;
+        input.focus();
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      sendMessage(input.value);
+    });
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      input.style.height = `${Math.min(input.scrollHeight, 130)}px`;
+    });
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+    document.querySelectorAll(".suggestion").forEach(button => {
+      button.addEventListener("click", () => sendMessage(button.dataset.prompt));
+    });
+  </script>
+</body>
+</html>
